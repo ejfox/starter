@@ -1,0 +1,63 @@
+{
+  "name": "starter",
+  "version": "0.0.3",
+  "private": true,
+  "description": "Starter/boilerplate",
+  "main": "gulpfile.js",
+  "scripts": {
+    "init": "npm install; gulp git-reset;gulp",
+    "bootstrap": "gulp git-reset",
+    "start": "gulp",
+    "github": "gulp github"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "EJ Fox <ejfox@ejfox.com>",
+  "contributors": "Gerald Rich <grich@vocativ.com>",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "coffee-script": "*",
+    "d3": "*",
+    "d3-selection-multi": "^1.0.0",
+    "d3-tip": "*",
+    "jquery": "*",
+    "nib": "*",
+    "stylus": "*",
+    "tabletop": "*",
+    "topojson": "*",
+    "underscore": "*"
+  },
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "webpack": "^1.13.2",
+    "webpack-stream": "^3.2.0",
+    "gulp": "*",
+    "gulp-bower": "*",
+    "gulp-coffee": "*",
+    "gulp-coffeelint": "*",
+    "gulp-filesize": "*",
+    "gulp-gh-pages": "*",
+    "gulp-htmlmin": "*",
+    "gulp-if": "*",
+    "gulp-load-plugins": "*",
+    "gulp-minify-css": "*",
+    "gulp-mustache-plus": "*",
+    "gulp-notify": "*",
+    "gulp-plumber": "*",
+    "gulp-rename": "*",
+    "gulp-exec": "*",
+    "gulp-stylus": "*",
+    "gulp-uglify": "*",
+    "gulp-util": "*",
+    "gulp-watch": "*",
+    "webpack-stream": "*",
+    "gulp-webserver": "*"
+  }
+}

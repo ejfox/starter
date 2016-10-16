@@ -1,0 +1,12 @@
+{
+  "development": true,
+  "project": {
+    "org": "ejfox",
+    "name": "Starter Project",
+    "slug": "starter"
+  },
+  "website": {
+    "host": "localhost",
+    "port": 8888
+  }
+}
