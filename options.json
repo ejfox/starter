@@ -2,7 +2,7 @@
   "development": true,
   "project": {
     "org": "ejfox",
-    "twitterhandle": "mrejfox"
+    "twitterhandle": "mrejfox",
     "name": "Starter Project",
     "slug": "starter",
     "description": "My starter project"
