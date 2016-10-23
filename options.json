@@ -2,8 +2,10 @@
   "development": true,
   "project": {
     "org": "ejfox",
+    "twitterhandle": "mrejfox"
     "name": "Starter Project",
-    "slug": "starter"
+    "slug": "starter",
+    "description": "My starter project"
   },
   "website": {
     "host": "localhost",
