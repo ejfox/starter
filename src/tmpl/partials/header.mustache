@@ -1,15 +1,15 @@
 <meta charset="utf-8">
 
 <title>{{ project.name }}</title>
-<meta name="description" content="Page description. No longer than 155 characters." />
+<meta name="description" content="{{ project.description }}" />
 
 <!-- Twitter Card data -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@publisher_handle">
+<meta name="twitter:site" content="@{{ project.twitterhandle }}">
 <meta name="twitter:title" content="{{ project.title }}">
 <meta name="twitter:description" content="{{ project.description }}">
 <meta name="twitter:creator" content="@{{ project.twitterhandle }}">
-<-- Twitter Summary card images must be at least 120x120px -->
+<!-- Twitter Summary card images must be at least 120x120px -->
 <!-- <meta name="twitter:image" content="img/og_image.png"> -->
 
 <!-- Open Graph data -->
