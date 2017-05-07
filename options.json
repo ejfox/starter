@@ -5,7 +5,8 @@
     "twitterhandle": "mrejfox",
     "name": "Starter Project",
     "slug": "starter",
-    "description": ""
+    "description": "",
+    "gaCode": ""
   },
   "website": {
     "port": 8888
