@@ -5,10 +5,9 @@
     "twitterhandle": "mrejfox",
     "name": "Starter Project",
     "slug": "starter",
-    "description": "My starter project"
+    "description": ""
   },
   "website": {
-    "host": "localhost",
     "port": 8888
   }
 }
