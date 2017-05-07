@@ -44,7 +44,7 @@ gulp.task 'init', (cb) ->
   exec 'rm -rf .git'
   exec 'git init'
   exec 'rm README.md'
-  exec 'mv options.sample.js options.js'
+  exec 'touch README.md'
   exec 'npm install', (err, stdout, stderr) ->
     console.log stdout
     console.log stderr
