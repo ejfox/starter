@@ -44,6 +44,7 @@
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
     "gulp-webserver": "^0.9.1",
+    "uglifyjs-webpack-plugin": "^1.0.1",
     "webpack": "^3.6.0",
     "webpack-stream": "^4.0.0"
   },
