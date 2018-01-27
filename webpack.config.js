@@ -11,7 +11,21 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader'
       }]
-    }
+    },
+    resolve: {
+      mainFields: [
+        "webpack",
+        "module",
+        "browser",
+        "web",
+        "browserify",
+        ["jam", "main"],
+        "main"
+      ],
+      alias: {
+          d3: 'd3/index.js'
+      }
+    },
     // ,plugins: [
     //   new UglifyJSPlugin()
     // ]
