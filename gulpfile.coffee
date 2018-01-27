@@ -208,4 +208,5 @@ gulp.task "build", gulp.series [
   "data"
   "img"
   "svg"
-], -> gulp
+  "getdata"
+]

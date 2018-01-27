@@ -6,7 +6,7 @@
   "bugs": {
     "url": "https://github.com/ejfox/starter/issues"
   },
-  "contributors": "Gerald Rich <grich@vocativ.com>",
+  "contributors": "Gerald Rich",
   "dependencies": {
     "coffee-script": "^1.12.5",
     "d3": "^4.8.0",
@@ -57,9 +57,10 @@
     "url": "https://github.com/ejfox/starter"
   },
   "scripts": {
+    "start": "gulp",
+    "prepublish": "gulp build",
+    "config": "gulp config",
     "github": "gulp github",
-    "init": "npm install; gulp git-reset;atom .;gulp",
-    "reset": "gulp git-reset",
-    "start": "gulp"
+    "init": "atom .;gulp init"
   }
 }
