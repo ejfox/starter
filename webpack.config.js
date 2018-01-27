@@ -12,7 +12,7 @@ module.exports = {
         loader: 'babel-loader'
       }]
     }
-    ,plugins: [
-      new UglifyJSPlugin()
-    ]
+    // ,plugins: [
+    //   new UglifyJSPlugin()
+    // ]
 };
