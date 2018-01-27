@@ -13,14 +13,6 @@ nib = require('nib')
 webpack = require('webpack-stream')
 watch = plugins.watch
 
-# options
-options = require './options'
-editJSON = require 'edit-json-file'
-options.prefixUrl = 'http://'+options.website.host
-if options.website.port isnt ''
-  options.prefixUrl += ':' + options.website.port
-
-
 # --- Tasks --- #
 gulp.task 'config', (cb) ->
   gulp.src('./options.json').pipe plugins.prompt.prompt [{
@@ -40,6 +32,12 @@ gulp.task 'config', (cb) ->
       name: 'port'
       message: 'Please enter the port to run the webserver on'
       default: '8888'
+    },
+    {
+      type: 'input'
+      name: 'googledatakey'
+      message: 'Please enter the Google sheets key for the data'
+      default: 'false'
     }], (res) ->
       # console.log 'response: ', res
       configFile = editJSON './options.json'
@@ -51,10 +49,21 @@ gulp.task 'config', (cb) ->
       configFile.set 'project.slug', parentDir
       configFile.set 'project.twitterhandle', res.twitterhandle
       configFile.set 'website.port', res.port
+
+      if res.googledatakey isnt 'false'
+        configFile.set 'project.googledatakey', res.googledatakey
+
       configFile.save()
       console.log 'Saving config'
       cb()
       process.exit(0)
+
+# options
+options = require './options'
+editJSON = require 'edit-json-file'
+options.prefixUrl = 'http://'+options.website.host
+if options.website.port isnt ''
+  options.prefixUrl += ':' + options.website.port
 
 gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'rm -rf .git'
@@ -64,6 +73,21 @@ gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'npm install', (err, stdout, stderr) ->
     console.log stdout
     console.log stderr
+
+gulp.task 'getdata', (cb) ->
+  if options.project.googledatakey isnt 'false' and options.project.googledatakey isnt undefined
+    dataKey = options.project.googledatakey
+    # console.log 'Pulling ' + dataKey
+    cmd = 'curl -o src/data/data.csv "https://docs.google.com/spreadsheets/d/e/' + dataKey + '/pub\?gid\=0\&single\=true\&output\=csv"'
+    console.log cmd
+    exec cmd, (err, stdout, stderr) ->
+      console.log stdout
+      console.log stderr
+      process.exit(0)
+  else
+    console.log 'No data key specified in options.json'
+    cb()
+    process.exit(0)
 
 # Lint coffeescript for errors
 gulp.task 'lint', ->
@@ -162,7 +186,7 @@ gulp.watch 'src/coffee/*.coffee', gulp.series 'coffee', 'webpack'
 gulp.watch 'src/styl/*.styl', gulp.parallel 'stylus'
 gulp.watch ['src/tmpl/*', 'src/tmpl/partials/*'], gulp.parallel 'mustache'
 gulp.watch 'src/data/*', gulp.parallel 'data'
-gulp.watch 'src/img/*', gulp.parallel 'img'
+gulp.watch 'src/img/*', gulp.parallel 'img', 'svg'
 
 
 # gulp.task "default", gulp.series("webpack", "stylus", "mustache", "data", "img", "watch", "webserver"), -> gulp
@@ -173,6 +197,7 @@ gulp.task "default", gulp.series [
   "mustache"
   "data"
   "img"
+  "svg"
   "webserver"
 ], -> gulp
 
@@ -182,4 +207,5 @@ gulp.task "build", gulp.series [
   "mustache"
   "data"
   "img"
+  "svg"
 ], -> gulp
