@@ -1,7 +1,7 @@
 {
   "name": "starter",
   "description": "Starter/boilerplate",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "EJ Fox <ejfox@ejfox.com>",
   "bugs": {
     "url": "https://github.com/ejfox/starter/issues"
@@ -13,11 +13,11 @@
     "d3-selection-multi": "^1.0.1",
     "d3-tip": "^0.7.1",
     "jquery": "^3.3.1",
+    "lodash": "^4.17.4",
     "nib": "^1.1.2",
     "stylus": "^0.54.5",
     "tabletop": "^1.5.2",
-    "topojson": "^3.0.0",
-    "underscore": "^1.8.3"
+    "topojson": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
