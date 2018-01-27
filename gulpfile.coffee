@@ -15,19 +15,41 @@ watch = plugins.watch
 # options
 options = require './options'
 editJSON = require 'edit-json-file'
-configFile = editJSON './options.json'
 options.prefixUrl = 'http://'+options.website.host
 if options.website.port isnt ''
   options.prefixUrl += ':' + options.website.port
 
+
 # --- Tasks --- #
-gulp.task 'init', (cb) ->
-  gulp.src('options.json').pipe prompt.confirm {
+gulp.task 'config', (cb) ->
+  gulp.src('./options.json').pipe plugins.prompt.prompt [{
       type: 'input'
       name: 'projectname'
-      message: 'Please enter project name'
-    }, (res) ->
-      console.log 'response: ', res
+      message: 'Please enter the project name'
+      default: 'Starter project'
+    },
+    {
+      type: 'input'
+      name: 'twitterhandle'
+      message: 'Please enter your twitter handle'
+      default: 'mrejfox'
+    },
+    {
+      type: 'input'
+      name: 'port'
+      message: 'Please enter the port to run the webserver on'
+      default: '8888'
+    }], (res) ->
+      # console.log 'response: ', res
+      configFile = editJSON './options.json'
+      configFile.set 'project.name', res.projectname
+      configFile.set 'project.twitterhandle', res.twitterhandle
+      configFile.set 'website.port', res.port
+      configFile.save()
+      console.log 'Saving config'
+      cb()
+
+gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'rm -rf .git'
   exec 'git init'
   exec 'rm README.md'
