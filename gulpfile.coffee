@@ -1,6 +1,6 @@
-"use strict"
-gulp = require("gulp")
-plugins = require("gulp-load-plugins")({
+'use strict'
+gulp = require('gulp')
+plugins = require('gulp-load-plugins')({
   rename: {
     'gulp-gh-pages': 'github',
     'gulp-minify-css': 'mincss',
@@ -8,18 +8,26 @@ plugins = require("gulp-load-plugins")({
   }
 })
 exec = require('child_process').exec
-nib = require("nib")
-webpack = require("webpack-stream")
+nib = require('nib')
+webpack = require('webpack-stream')
 watch = plugins.watch
 
 # options
-options = require("./options")
+options = require './options'
+editJSON = require 'edit-json-file'
+configFile = editJSON './options.json'
 options.prefixUrl = 'http://'+options.website.host
 if options.website.port isnt ''
   options.prefixUrl += ':' + options.website.port
 
 # --- Tasks --- #
 gulp.task 'init', (cb) ->
+  gulp.src('options.json').pipe prompt.confirm {
+      type: 'input'
+      name: 'projectname'
+      message: 'Please enter project name'
+    }, (res) ->
+      console.log 'response: ', res
   exec 'rm -rf .git'
   exec 'git init'
   exec 'rm README.md'
@@ -29,23 +37,15 @@ gulp.task 'init', (cb) ->
     console.log stderr
 
 # Lint coffeescript for errors
-gulp.task "lint", ->
+gulp.task 'lint', ->
   gulp.src("./src/coffee/*.coffee")
   .pipe plugins.coffeelint()
   .pipe plugins.coffeelint.reporter()
 
 # Compile coffeescript
-gulp.task "coffee", gulp.series 'lint', ->
+gulp.task 'coffee', gulp.series 'lint', ->
   gulp.src("./src/coffee/*.coffee")
   .pipe plugins.coffee(bare: true).on('error', plugins.util.log)
-  .pipe plugins.if(->
-    if options.project.development
-      plugins.util.log 'Development mode'
-      return false
-    else
-      plugins.util.log 'Production mode'
-      return true
-  , plugins.uglify())
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/")
 
@@ -83,13 +83,19 @@ gulp.task "mustache", ->
 
 # Copy data files (CSV & JSON) from /data/ to /build/data/
 gulp.task "data", ->
-  gulp.src(["./src/data/*.csv", "./src/data/*.json"])
+  gulp.src([
+    "./src/data/*.csv",
+    "./src/data/*.json"
+  ])
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/data/")
 
 # Copy raster images from /img/ to /build/img/
 gulp.task "img", ->
-  gulp.src(["./src/img/*.png", "./src/img/*.gif", "./src/img/*.jpg"])
+  gulp.src([
+    "./src/img/*.png",
+    "./src/img/*.gif",
+    "./src/img/*.jpg"])
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/img/")
 

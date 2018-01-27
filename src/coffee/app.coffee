@@ -25,6 +25,6 @@ svg = d3.select('#container')
 ###
 # Load data and call initialize() function
 d3.queue()
-  .defer(d3.csv, 'data/super_kos_district_data.csv')
+  .defer(d3.csv, 'data/data.csv')
   .awaitAll initialize
 ###
