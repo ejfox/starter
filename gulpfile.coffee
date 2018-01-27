@@ -1,5 +1,6 @@
 'use strict'
-gulp = require('gulp')
+gulp = require 'gulp'
+path = require 'path'
 plugins = require('gulp-load-plugins')({
   rename: {
     'gulp-gh-pages': 'github',
@@ -42,12 +43,18 @@ gulp.task 'config', (cb) ->
     }], (res) ->
       # console.log 'response: ', res
       configFile = editJSON './options.json'
+
+      parentDir = path.dirname(__filename).split('/')
+      parentDir = parentDir[parentDir.length-1]
+
       configFile.set 'project.name', res.projectname
+      configFile.set 'project.slug', parentDir
       configFile.set 'project.twitterhandle', res.twitterhandle
       configFile.set 'website.port', res.port
       configFile.save()
       console.log 'Saving config'
       cb()
+      process.exit(0)
 
 gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'rm -rf .git'
