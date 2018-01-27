@@ -7,7 +7,7 @@ This is a basic but opinionated starting point for prototyping apps, with an emp
 
 `cd PROJECT-NAME`
 
-Run `npm init` to open atom, remove the `.git` folder, remove the default `README.md`, and run `npm install`
+Run `gulp init` to open atom, remove the `.git` folder, remove the default `README.md`, and run `npm install`
 
 `npm start` to start gulp
 
