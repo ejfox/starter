@@ -19,27 +19,6 @@ if options.website.port isnt ''
   options.prefixUrl += ':' + options.website.port
 
 # --- Tasks --- #
-gulp.task "default", [
-  "webpack"
-  "stylus"
-  "mustache"
-  "data"
-  "img"
-  "watch"
-  "webserver"
-], -> gulp
-
-# Remove previous git data and init fresh
-###
-gulp.task 'init', plugins.shell.task([
-  'rm -rf .git',
-  'git init',
-  'rm README.md',
-  'mv options.sample.js options.js'
-  'npm install',
-])
-###
-
 gulp.task 'init', (cb) ->
   exec 'rm -rf .git'
   exec 'git init'
@@ -56,7 +35,7 @@ gulp.task "lint", ->
   .pipe plugins.coffeelint.reporter()
 
 # Compile coffeescript
-gulp.task "coffee", ["lint"], ->
+gulp.task "coffee", gulp.series 'lint', ->
   gulp.src("./src/coffee/*.coffee")
   .pipe plugins.coffee(bare: true).on('error', plugins.util.log)
   .pipe plugins.if(->
@@ -70,7 +49,8 @@ gulp.task "coffee", ["lint"], ->
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/")
 
-gulp.task "webpack", ["coffee"], ->
+# Create webpack bundle
+gulp.task "webpack", gulp.series 'coffee', ->
   gulp.src("./build/app.js")
   .pipe webpack( require('./webpack.config.js') )
   .pipe gulp.dest("./build/")
@@ -109,7 +89,7 @@ gulp.task "data", ->
 
 # Copy raster images from /img/ to /build/img/
 gulp.task "img", ->
-  gulp.src(["./source/img/*.png", "./source/img/*.gif", "./source/img/*.jpg"])
+  gulp.src(["./src/img/*.png", "./src/img/*.gif", "./src/img/*.jpg"])
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/img/")
 
@@ -136,9 +116,35 @@ gulp.task "webserver", ->
   )
 
 # Watch files for changes and livereload when detected
-gulp.task "watch", ->
-  watch "src/coffee/*.coffee", {name: 'App'}, (events, done) -> gulp.start "webpack"
-  watch "src/styl/*.styl", {name: 'Stylus'}, (events, done) -> gulp.start "stylus"
-  watch [ "src/tmpl/*", "src/tmpl/partials/*" ], {name: 'Mustache'}, (events, done) -> gulp.start "mustache"
-  watch "src/data/*", {name: 'Data'}, (events, done) -> gulp.start "data"
-  watch "src/img/*", {name: 'Images'}, (events, done) -> gulp.start "img"
+# gulp.task "watch", ->
+#   watch "src/coffee/*.coffee", {name: 'App'}, (events, done) -> gulp.task "webpack"
+#   watch "src/styl/*.styl", {name: 'Stylus'}, (events, done) -> gulp.task "stylus"
+#   watch [ "src/tmpl/*", "src/tmpl/partials/*" ], {name: 'Mustache'}, (events, done) -> gulp.task "mustache"
+#   watch "src/data/*", {name: 'Data'}, (events, done) -> gulp.task "data"
+#   watch "src/img/*", {name: 'Images'}, (events, done) -> gulp.task "img"
+
+gulp.watch 'src/coffee/*.coffee', gulp.series 'coffee', 'webpack'
+gulp.watch 'src/styl/*.styl', gulp.parallel 'stylus'
+gulp.watch ['src/tmpl/*', 'src/tmpl/partials/*'], gulp.parallel 'mustache'
+gulp.watch 'src/data/*', gulp.parallel 'data'
+gulp.watch 'src/img/*', gulp.parallel 'img'
+
+
+# gulp.task "default", gulp.series("webpack", "stylus", "mustache", "data", "img", "watch", "webserver"), -> gulp
+
+gulp.task "default", gulp.series [
+  "webpack"
+  "stylus"
+  "mustache"
+  "data"
+  "img"
+  "webserver"
+], -> gulp
+
+gulp.task "build", gulp.series [
+  "webpack"
+  "stylus"
+  "mustache"
+  "data"
+  "img"
+], -> gulp
