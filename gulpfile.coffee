@@ -154,7 +154,7 @@ gulp.task "img", ->
 
 # Copy svg from /img/ to /build/img/
 gulp.task "svg", ->
-  gulp.src(["./source/img/*.svg"])
+  gulp.src(["./src/img/*.svg"])
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/img/")
 
