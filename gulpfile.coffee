@@ -72,8 +72,12 @@ gulp.task 'config', (cb) ->
 options = require './options'
 editJSON = require 'edit-json-file'
 options.prefixUrl = 'http://'+options.website.host
+
 if options.website.port isnt ''
   options.prefixUrl += ':' + options.website.port
+
+if options.project.revision isnt '' and options.project.revision isnt undefined
+  options.project.slug += '-'+options.project.revision
 
 gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'rm -rf .git'
@@ -222,7 +226,7 @@ gulp.task "build", gulp.series [
 ]
 
 # Publish data to S3
-gulp.task "publishdata", gulp.series 'data', (cb) ->
+gulp.task "s3publishdata", gulp.series 'data', (cb) ->
   awsConfig = {
     bucketName: options.project.s3bucket,
     region: process.env.ASSETS_AWS_DEFAULT_REGION,
