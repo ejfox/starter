@@ -1,4 +1,5 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const webpack = require('webpack')
 module.exports = {
     entry: './build/app.js',
     output: {
@@ -12,7 +13,10 @@ module.exports = {
         loader: 'babel-loader'
       }]
     }
-    // ,plugins: [
-    //   new UglifyJSPlugin()
-    // ]
+    ,plugins: [
+      // new UglifyJSPlugin()
+      new webpack.ProvidePlugin({
+        d3: 'd3'
+      })
+    ]
 };

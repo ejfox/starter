@@ -1,4 +1,9 @@
-d3 = require 'd3'
+# d3 = require 'd3'
+# require 'd3-selection-multi'
+import * as d3 from 'd3/build/d3.node';
+import d3SelectMulti from 'd3-selection-multi'
+
+console.log(d3.selection.prototype)
 
 # Create a categorical scale with custom colors
 colorCatScale = d3.scaleOrdinal()
@@ -15,8 +20,12 @@ height = window.innerHeight
 svg = d3.select('#container')
   .append('svg')
     .attr('id', 'viz-svg')
-    .attr('width', width)
-    .attr('height', height)
+    # .attr('width', width)
+    # .attr('height', height)
+    .attrs {
+      width: 10,
+      height: 10
+    }
   .append('rect')
     .attr('width', 200)
     .attr('height', 200)
