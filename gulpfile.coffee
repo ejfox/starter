@@ -12,19 +12,20 @@ exec = require('child_process').exec
 nib = require('nib')
 webpack = require('webpack-stream')
 watch = plugins.watch
+require('dotenv').config()
 
 # --- Tasks --- #
 gulp.task 'config', (cb) ->
   gulp.src('./options.json').pipe plugins.prompt.prompt [{
       type: 'input'
       name: 'projectname'
-      message: 'Please enter the project name'
+      message: 'Please enter this project name'
       default: 'Starter project'
     },
     {
       type: 'input'
       name: 'twitterhandle'
-      message: 'Please enter your twitter handle'
+      message: 'Please enter the twitter handle to be associated with the project'
       default: 'mrejfox'
     },
     {
@@ -36,7 +37,13 @@ gulp.task 'config', (cb) ->
     {
       type: 'input'
       name: 'googledatakey'
-      message: 'Please enter the Google sheets key for the data'
+      message: 'If using a Google Sheet for data.csv, enter the sheet\'s publish key'
+      default: 'false'
+    },
+    {
+      type: 'input'
+      name: 's3bucket'
+      message: 'If you use S3, enter the name of the bucket you wanna use'
       default: 'false'
     }], (res) ->
       # console.log 'response: ', res
@@ -49,6 +56,9 @@ gulp.task 'config', (cb) ->
       configFile.set 'project.slug', parentDir
       configFile.set 'project.twitterhandle', res.twitterhandle
       configFile.set 'website.port', res.port
+
+      if res.s3bucket isnt 'false'
+        configFile.set 'project.s3bucket', res.s3bucket
 
       if res.googledatakey isnt 'false'
         configFile.set 'project.googledatakey', res.googledatakey
@@ -83,11 +93,12 @@ gulp.task 'getdata', (cb) ->
     exec cmd, (err, stdout, stderr) ->
       console.log stdout
       console.log stderr
-      process.exit(0)
+      cb(err)
+      # process.exit(0)
   else
     console.log 'No data key specified in options.json'
     cb()
-    process.exit(0)
+    # process.exit(0)
 
 # Lint coffeescript for errors
 gulp.task 'lint', ->
@@ -154,7 +165,7 @@ gulp.task "img", ->
 
 # Copy svg from /img/ to /build/img/
 gulp.task "svg", ->
-  gulp.src(["./source/img/*.svg"])
+  gulp.src(["./src/img/*.svg"])
   .pipe plugins.filesize()
   .pipe gulp.dest("./build/img/")
 
@@ -162,7 +173,6 @@ gulp.task "svg", ->
 gulp.task 'github', ->
   gulp.src('./build/**/*')
     .pipe plugins.github()
-
 # Start a local webserver for development
 gulp.task "webserver", ->
   gulp.src("./build/")
@@ -202,11 +212,76 @@ gulp.task "default", gulp.series [
 ], -> gulp
 
 gulp.task "build", gulp.series [
+  "getdata"
   "webpack"
   "stylus"
   "mustache"
   "data"
   "img"
   "svg"
-  "getdata"
 ]
+
+# Publish data to S3
+gulp.task "publishdata", gulp.series 'data', (cb) ->
+  awsConfig = {
+    bucketName: options.project.s3bucket,
+    region: process.env.ASSETS_AWS_DEFAULT_REGION,
+    accessKeyId: process.env.ASSETS_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.ASSETS_AWS_SECRET_ACCESS_KEY
+  }
+
+  publisherAssets = plugins.awspublish.create({
+    region: awsConfig.region,
+    params: {Bucket: awsConfig.bucketName},
+    accessKeyId: awsConfig.accessKeyId,
+    secretAccessKey: awsConfig.secretAccessKey,
+    httpOptions: { timeout: 300000 }
+  })
+
+  gulp.src('./build/data/*.{csv,json}')
+    .pipe(plugins.rename((path) ->
+      path.dirname = "/#{options.project.slug}/data/"
+    ))
+    # .pipe(awspublish.gzip())
+    # .pipe(gzipFilter.restore)
+    .pipe(publisherAssets.publish({}, {
+      # createOnly: true
+      force: true
+    }))
+    .pipe(publisherAssets.cache())
+    .pipe(plugins.awspublish.reporter())
+    .on('finish', ->
+      console.log("Published to: http://s3-#{process.env.ASSETS_AWS_DEFAULT_REGION}.amazonaws.com/#{awsConfig.bucketName}/")
+    )
+  cb()
+
+# Publish data to S3
+gulp.task "s3publish", gulp.series 'build', (cb) ->
+  awsConfig = {
+    bucketName: options.project.s3bucket,
+    region: process.env.ASSETS_AWS_DEFAULT_REGION,
+    accessKeyId: process.env.ASSETS_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.ASSETS_AWS_SECRET_ACCESS_KEY
+  }
+
+  publisherAssets = plugins.awspublish.create({
+    region: awsConfig.region,
+    params: {Bucket: awsConfig.bucketName},
+    accessKeyId: awsConfig.accessKeyId,
+    secretAccessKey: awsConfig.secretAccessKey,
+    httpOptions: { timeout: 300000 }
+  })
+
+  gulp.src('./build/**/*', {base: 'build'})
+    .pipe(plugins.rename((path) ->
+      path.dirname = "/#{options.project.slug}/" + path.dirname
+    ))
+    # .pipe(awspublish.gzip())
+    # .pipe(gzipFilter.restore)
+    .pipe(publisherAssets.publish({}, {createOnly: true}))
+    .pipe(publisherAssets.cache())
+    .pipe(plugins.awspublish.reporter())
+    .on('finish', ->
+      console.log("Published to: http://s3.#{process.env.ASSETS_AWS_DEFAULT_REGION}.amazonaws.com/#{awsConfig.bucketName}/#{options.project.slug}/index.html")
+      cb()
+    )
