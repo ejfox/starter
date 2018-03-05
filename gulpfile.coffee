@@ -84,6 +84,7 @@ gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'git init'
   exec 'rm README.md'
   exec 'touch README.md'
+  exec 'atom .'
   exec 'npm install', (err, stdout, stderr) ->
     console.log stdout
     console.log stderr
