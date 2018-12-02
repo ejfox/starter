@@ -24,7 +24,7 @@ svg = d3.select('#container')
   .append('rect')
     .attr('width', 200)
     .attr('height', 200)
-    .attr('fill', 'red')
+    .attr('fill', 'blue')
 
 ###
 # Load data and call initialize() function

@@ -30,23 +30,10 @@ gulp.task 'config', (cb) ->
     },
     {
       type: 'input'
-      name: 'port'
-      message: 'Please enter the port to run the webserver on'
-      default: '8888'
-    },
-    {
-      type: 'input'
       name: 'googledatakey'
       message: 'If using a Google Sheet for data.csv, enter the sheet\'s publish key'
       default: 'false'
-    },
-    {
-      type: 'input'
-      name: 's3bucket'
-      message: 'If you use S3, enter the name of the bucket you wanna use'
-      default: 'false'
     }], (res) ->
-      # console.log 'response: ', res
       configFile = editJSON './options.json'
 
       parentDir = path.dirname(__filename).split('/')
@@ -55,7 +42,6 @@ gulp.task 'config', (cb) ->
       configFile.set 'project.name', res.projectname
       configFile.set 'project.slug', parentDir
       configFile.set 'project.twitterhandle', res.twitterhandle
-      configFile.set 'website.port', res.port
 
       if res.s3bucket isnt 'false'
         configFile.set 'project.s3bucket', res.s3bucket
@@ -88,6 +74,7 @@ gulp.task 'init', gulp.series 'config', (cb) ->
   exec 'npm install', (err, stdout, stderr) ->
     console.log stdout
     console.log stderr
+  exec 'gulp config'
 
 gulp.task 'getdata', (cb) ->
   if options.project.googledatakey isnt 'false' and options.project.googledatakey isnt undefined
@@ -175,9 +162,10 @@ gulp.task "svg", ->
   .pipe gulp.dest("./build/img/")
 
 # Publish to gh-pages
-gulp.task 'github', ->
+gulp.task 'gh-pages', ->
   gulp.src('./build/**/*')
     .pipe plugins.github()
+
 # Start a local webserver for development
 gulp.task "webserver", ->
   gulp.src("./build/")
