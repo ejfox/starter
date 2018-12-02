@@ -38,6 +38,6 @@ If you have set `project.googledatakey` in `options.json` you can run `gulp getd
 ### Publishing
 The `/build/` folder is a standalone client-side web app with everything packaged. It can be put on a webserver or uploaded to a site like Netlify.
 
-If you have set `project.s3bucket` in `options.json` and set your S3 credentials by renaming `.env-example` and filling it out you can run `gulp s3publish` to publish to an S3 bucket by running `gulp s3publishdata`
+If you have set `project.s3bucket` in `options.json` and set your S3 credentials by renaming `.env-example` and filling it out you can run `gulp s3publish` to publish to an S3 bucket, and update the data in the project by running `gulp s3publishdata` – you need to run both commands on first upload
 
 To publish to github pages you can run `gulp gh-pages`
