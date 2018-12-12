@@ -11,9 +11,9 @@ module.exports = {
         filename: 'app.bundle.js'
     }
     ,plugins: [
-      new HardSourceWebpackPlugin()
+      // new HardSourceWebpackPlugin()
       // new UglifyJSPlugin()
-      ,new webpack.ProvidePlugin({
+      new webpack.ProvidePlugin({
         d3: 'd3'
       })
     ]
