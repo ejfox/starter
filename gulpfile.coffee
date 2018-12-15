@@ -106,9 +106,19 @@ gulp.task 'coffee', gulp.series 'lint', ->
   .pipe gulp.dest("./build/")
 
 # Create webpack bundle
-gulp.task "webpack", gulp.series 'coffee', ->
+
+webpackConfig = require('./webpack.config.js')
+webpackConfigProduction = Object.assign(webpackConfig, {mode: 'production'})
+webpackConfigDevelopment = Object.assign(webpackConfig, {mode: 'development'})
+
+gulp.task "webpack:production", gulp.series 'coffee', ->
   gulp.src("./build/app.js")
-  .pipe webpack( require('./webpack.config.js') )
+  .pipe webpack( webpackConfigProduction )
+  .pipe gulp.dest("./build/")
+
+gulp.task "webpack:development", gulp.series 'coffee', ->
+  gulp.src("./build/app.js")
+  .pipe webpack( webpackConfigDevelopment )
   .pipe gulp.dest("./build/")
 
 # Compile stylus to CSS
@@ -185,7 +195,7 @@ gulp.task "webserver", ->
 #   watch "src/data/*", {name: 'Data'}, (events, done) -> gulp.task "data"
 #   watch "src/img/*", {name: 'Images'}, (events, done) -> gulp.task "img"
 
-gulp.watch 'src/coffee/*.coffee', gulp.series 'coffee', 'webpack'
+gulp.watch 'src/coffee/*.coffee', gulp.series 'coffee', 'webpack:development'
 gulp.watch 'src/styl/*.styl', gulp.parallel 'stylus'
 gulp.watch ['src/tmpl/*', 'src/tmpl/partials/*'], gulp.parallel 'mustache'
 gulp.watch 'src/data/*', gulp.parallel 'data'
@@ -195,7 +205,7 @@ gulp.watch 'src/img/*', gulp.parallel 'img', 'svg'
 # gulp.task "default", gulp.series("webpack", "stylus", "mustache", "data", "img", "watch", "webserver"), -> gulp
 
 gulp.task "default", gulp.series [
-  "webpack"
+  "webpack:development"
   "stylus"
   "mustache"
   "data"
@@ -206,7 +216,7 @@ gulp.task "default", gulp.series [
 
 gulp.task "build", gulp.series [
   "getdata"
-  "webpack"
+  "webpack:production"
   "stylus"
   "mustache"
   "data"
